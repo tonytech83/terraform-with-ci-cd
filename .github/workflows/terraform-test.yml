@@ -9,7 +9,7 @@ on:
 
 jobs:
   terraform-test:
-    name: Checkout code
+    name: Terraform Test
     runs-on: ubuntu-latest
     steps:
       # Checkout the repository to the GitHub Actions runner
@@ -19,13 +19,13 @@ jobs:
       # Install the latest version of Terraform CLI
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
-      
+
       # Initialize a new or existing Terraform working directory
       # Creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
         id: init
         run: terraform init
-      
+
       # Checks that all Terraform configuration files adhere to a connical format
       - name: Terraform Format
         id: fmt
@@ -35,4 +35,3 @@ jobs:
       - name: Terraform Validate
         id: validate
         run: terraform validate
-
