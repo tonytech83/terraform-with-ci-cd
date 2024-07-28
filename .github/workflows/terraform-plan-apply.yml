@@ -1,0 +1,78 @@
+---
+name: Plan and Apply
+
+on:
+  push:
+    branches: main
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIEN_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+jobs:
+  terraform-plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Login to Azure
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # Install the latest version of the Terraform CLI
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+      
+      # Initialize a new or existing Terraform working directory
+      # Creating initial files, loading any remote state, downloading modules, etc.
+      - name: Terraform Init
+        run: terraform init
+
+      # Generate an execution plan for Terraform
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+      # Save the plan to artifacts
+      - name: Save Terraform Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: tfplan
+
+  terraform-apply:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+    
+    steps:
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Install the latest version of the Terraform CLI
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # Initialize a new or existing Terraform working directory
+      # Creating initial files, loading any remote state, downloading modules, etc.
+      - name: Terraform Init
+        run: terraform init
+
+      # Download the Terraform plan from the previous job
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: tfplan
+
+      # Terraform Apply
+      - name: Terraform Apply
+        run: terraform apply tfplan -auto-approve
