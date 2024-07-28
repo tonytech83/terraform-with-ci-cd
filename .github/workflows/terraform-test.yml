@@ -16,12 +16,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Login to Azure
-      - name: Azure login
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
       # Install the latest version of Terraform CLI
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -29,7 +23,7 @@ jobs:
       # Initialize a new or existing Terraform working directory
       # Creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
-        run: terraform init
+        run: az login -u ${{ secrets.AZ_USERNAME }} -p ${{ secrets.AZ_PASSWORD }} && terraform init
 
       # Checks that all Terraform configuration files adhere to a connical format
       - name: Terraform Format
