@@ -75,4 +75,6 @@ jobs:
 
       # Terraform Apply
       - name: Terraform Apply
-        run: terraform apply tfplan
+        uses: dflook/terraform-apply@v1
+        with:
+          path: tfplan/tfplan
