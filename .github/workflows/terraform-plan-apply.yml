@@ -34,7 +34,7 @@ jobs:
       # Initialize a new or existing Terraform working directory
       # Creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
-        run: terraform init
+        run: az login -u ${{ secrets.AZ_USERNAME }} -p ${{ secrets.AZ_PASSWORD }} && terraform init
 
       # Generate an execution plan for Terraform
       - name: Terraform Plan
@@ -71,8 +71,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: tfplan
-          path: .
 
       # Terraform Apply
       - name: Terraform Apply
-        run: terraform apply -input=false tfplan
+        run: terraform apply -auto-approve tfplan
