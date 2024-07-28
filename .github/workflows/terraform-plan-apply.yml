@@ -71,10 +71,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: tfplan
-          path: tfplan
+          path: .
 
       # Terraform Apply
       - name: Terraform Apply
-        uses: dflook/terraform-apply@v1
-        with:
-          path: tfplan/tfplan
+        run: terraform apply -input=false tfplan
