@@ -2,8 +2,7 @@
 name: Plan and Apply
 
 on:
-  push:
-    branches: main
+  workflow_dispatch
 
 env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIEN_ID }}
