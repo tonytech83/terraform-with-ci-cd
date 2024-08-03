@@ -1,0 +1,33 @@
+---
+name: Azure Destroy
+
+on:
+  workflow_dispatch:
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIEN_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+jobs:
+  terraform-destroy:
+    name: Terraform Destroy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Configure Terraform Backend
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=StorageRG" \
+            -backend-config="storage_account_name=taskboardstorage" \
+            -backend-config="container_name=taskboard-container" \
+            -backend-config="key=terraform.tfstate"
+
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve
